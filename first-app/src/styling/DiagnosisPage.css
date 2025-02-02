@@ -1,94 +1,100 @@
-/* Centers the content vertically and horizontally, 
-   with a light background. */
-   .diagnosis-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: #f2f7f9; /* light gray-blue background */
-    padding: 20px;
+/* Centers the content vertically and horizontally, with a light background */
+.diagnosis-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f2f7f9;
+  padding: 20px;
+}
+
+/* The "card" that holds the diagnosis details */
+.diagnosis-card {
+  background: #ffffff;
+  max-width: 600px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  animation: fadeIn 0.5s ease-in-out;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header styling */
+.diagnosis-header {
+  margin-bottom: 20px;
+}
+
+.diagnosis-title {
+  font-size: 1.8rem;
+  color: #008080;
+  margin-bottom: 0.5rem;
+}
+
+.diagnosis-subtitle {
+  font-size: 1rem;
+  color: #666666;
+  margin: 0;
+}
+
+/* Summary Section */
+.diagnosis-summary {
+  background-color: #eef7f8;
+  border-left: 4px solid #008080;
+  margin: 20px 0;
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+.summary-text {
+  font-size: 1rem;
+  color: #333333;
+  line-height: 1.4;
+}
+
+/* List for diagnosis details */
+.diagnosis-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+}
+
+.diagnosis-list li {
+  background: #fafafa;
+  margin-bottom: 10px;
+  padding: 12px 15px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.diagnosis-list li strong {
+  color: #004d4d;
+  margin-right: 5px;
+}
+
+.diagnosis-list li:hover {
+  background: #e4f1f2;
+}
+
+/* Disclaimer text */
+.disclaimer-text {
+  font-size: 0.8rem;
+  color: #666666;
+  margin-top: 20px;
+}
+
+/* Fade-in animation for the card */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  /* The "card" that holds the diagnosis details */
-  .diagnosis-card {
-    background: #ffffff;
-    max-width: 600px;
-    width: 100%;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    animation: fadeIn 0.5s ease-in-out;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  /* Title and subtitle */
-  .diagnosis-header {
-    margin-bottom: 20px;
-  }
-  
-  .diagnosis-title {
-    font-size: 1.8rem;
-    color: #008080; /* teal-ish color for the heading */
-    margin-bottom: 0.5rem;
-  }
-  
-  .diagnosis-subtitle {
-    font-size: 1rem;
-    color: #666666; 
-    margin: 0;
-  }
-  
-  /* Summary Section */
-  .diagnosis-summary {
-    background-color: #eef7f8;
-    border-left: 4px solid #008080;
-    margin: 20px 0;
-    padding: 10px 15px;
-    border-radius: 8px;
-  }
-  
-  .summary-text {
-    font-size: 1rem;
-    color: #333333;
-    line-height: 1.4;
-  }
-  
-  /* List for diagnosis details */
-  .diagnosis-list {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0 0;
-  }
-  
-  .diagnosis-list li {
-    background: #fafafa;
-    margin-bottom: 10px;
-    padding: 12px 15px;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    transition: background 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .diagnosis-list li strong {
-    color: #004d4d; /* deeper teal for emphasis */
-    margin-right: 5px;
-  }
-  
-  .diagnosis-list li:hover {
-    background: #e4f1f2; /* slight hover effect */
-  }
-  
-  /* Fade-in animation for the card */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  
-  .disclaimer-text {
-    font-size: 0.8rem;
-    color: #666666;
-    margin-top: 20px;
-  }
+}

@@ -4,6 +4,7 @@ import shutil
 import asyncio
 from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,6 +16,20 @@ if not API_KEY:
 
 # Create a FastAPI instance
 app = FastAPI()
+
+# Allow requests from your frontend (http://localhost:3000)
+origins = [
+    "http://localhost:3000",
+    # You can add more origins here if needed.
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # or use ["*"] to allow all origins (not recommended for production)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Directory to store uploaded videos
 UPLOAD_DIR = "uploads"

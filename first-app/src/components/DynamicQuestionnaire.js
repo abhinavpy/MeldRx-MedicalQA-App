@@ -5,8 +5,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Use an env variable for your API key, e.g., REACT_APP_GEMINI_API_KEY in .env
 // const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
-//console.log("The env key: " + process.env.REACT_APP_GOOGLE_API_KEY);
-const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GOOGLE_API_KEY);
+const genAI = new GoogleGenerativeAI("AIzaSyBRCU_XwrX9ay2LXYsCgAuWUtY_QtrRcLI");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const QUESTION_THRESHOLD = 7; // Final diagnosis threshold
@@ -14,13 +13,9 @@ const QUESTION_THRESHOLD = 7; // Final diagnosis threshold
 const DynamicQuestionnaire = () => {
   const navigate = useNavigate();
 
-  // Our question objects now include:
-  // {
-  //   id: number,
-  //   text: string,
-  //   answer: string,
-  //   options?: string[],  // If LLM provides multiple-choice options
-  // }
+  // ======================
+  // 1. Questions & STT State (unchanged)
+  // ======================
   const [questions, setQuestions] = useState([
     {
       id: 1,
@@ -41,24 +36,31 @@ const DynamicQuestionnaire = () => {
       options: [],
     },
   ]);
-
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-
-  // STT state
   const [isRecording, setIsRecording] = useState(false);
-  const [voiceAnswer, setVoiceAnswer] = useState(""); // New state for voice transcription
+  const [voiceAnswer, setVoiceAnswer] = useState("");
   const recognitionRef = useRef(null);
 
-  // ---------------------------------------------------------------
-  // Video Recording State & Refs
-  // ---------------------------------------------------------------
+  // ======================
+  // 2. Video Recording State & Refs
+  // ======================
+  // New state to store recorded video chunks
   const [recordedChunks, setRecordedChunks] = useState([]);
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const videoStreamRef = useRef(null);
 
-  // Initialize video recording on component mount
+  // ======================
+  // 3. Reset voice answer when question changes (unchanged)
+  // ======================
+  useEffect(() => {
+    setVoiceAnswer("");
+  }, [currentQuestionIndex]);
+
+  // ======================
+  // 4. Initialize Video Recording on Mount
+  // ======================
   useEffect(() => {
     async function initVideoRecording() {
       try {
@@ -70,11 +72,12 @@ const DynamicQuestionnaire = () => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
-        // You can set codec options if needed (ensure browser support)
+        // Set up MediaRecorder with MIME type video/webm
         const options = { mimeType: "video/webm; codecs=vp9" };
         const recorder = new MediaRecorder(stream, options);
         mediaRecorderRef.current = recorder;
 
+        // Collect recorded chunks
         recorder.ondataavailable = (event) => {
           if (event.data && event.data.size > 0) {
             setRecordedChunks((prev) => [...prev, event.data]);
@@ -89,7 +92,7 @@ const DynamicQuestionnaire = () => {
     }
     initVideoRecording();
 
-    // Cleanup function stops the recorder and video stream when component unmounts
+    // Cleanup: Stop recorder and video stream on unmount
     return () => {
       if (
         mediaRecorderRef.current &&
@@ -103,14 +106,9 @@ const DynamicQuestionnaire = () => {
     };
   }, []);
 
-  // Reset voice answer when question changes
-  useEffect(() => {
-    setVoiceAnswer("");
-  }, [currentQuestionIndex]);
-
-  // ---------------------------------------------------------------
-  // 1. Checking Question Type
-  // ---------------------------------------------------------------
+  // ======================
+  // 5. Helper Functions for Question Handling (unchanged)
+  // ======================
   const isScaleQuestion = () => {
     return questions[currentQuestionIndex].text
       .toLowerCase()
@@ -122,16 +120,11 @@ const DynamicQuestionnaire = () => {
     return opts && opts.length > 0;
   };
 
-  // ---------------------------------------------------------------
-  // 2. Changing Answers (Text, Scale, Options)
-  // ---------------------------------------------------------------
   const handleInputChange = (e) => {
     const value = e.target.value;
     const updatedQuestions = [...questions];
     updatedQuestions[currentQuestionIndex].answer = value;
     setQuestions(updatedQuestions);
-
-    // Clear voice answer if user manually edits
     if (voiceAnswer) {
       setVoiceAnswer("");
     }
@@ -143,9 +136,6 @@ const DynamicQuestionnaire = () => {
     setQuestions(updatedQuestions);
   };
 
-  // ---------------------------------------------------------------
-  // 3. Speech-to-Text (STT) and Text-to-Speech (TTS)
-  // ---------------------------------------------------------------
   const handleSpeakQuestion = () => {
     const currentQuestion = questions[currentQuestionIndex].text;
     const utterance = new SpeechSynthesisUtterance(currentQuestion);
@@ -158,42 +148,34 @@ const DynamicQuestionnaire = () => {
   const handleStartRecording = () => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
-
     if (!SpeechRecognition) {
       alert("SpeechRecognition is not supported in this browser.");
       return;
     }
-
     const recognition = new SpeechRecognition();
     recognition.lang = "en-US";
     recognition.interimResults = false;
-
     recognition.onstart = () => {
       setIsRecording(true);
       console.log("Audio recording started...");
     };
-
     recognition.onend = () => {
       setIsRecording(false);
       console.log("Audio recording ended...");
     };
-
     recognition.onerror = (event) => {
       setIsRecording(false);
       console.error("Speech Recognition Error:", event.error);
       alert("An error occurred with SpeechRecognition.");
     };
-
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       setVoiceAnswer(transcript);
       console.log("Transcribed:", transcript);
-
       const updated = [...questions];
       updated[currentQuestionIndex].answer = transcript;
       setQuestions(updated);
     };
-
     recognition.start();
     recognitionRef.current = recognition;
   };
@@ -205,9 +187,90 @@ const DynamicQuestionnaire = () => {
     }
   };
 
-  // ---------------------------------------------------------------
-  // 4. Next Question or Diagnosis
-  // ---------------------------------------------------------------
+  // ======================
+  // 6. generateDiagnosis: Final Diagnosis Using Video Analysis & Conversation Q&A
+  // ======================
+  const generateDiagnosis = async () => {
+    try {
+      setIsLoading(true);
+
+      // Stop video recording if still active
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state === "recording"
+      ) {
+        mediaRecorderRef.current.stop();
+        console.log("Stopped video recording for final diagnosis.");
+      }
+
+      // Brief delay to ensure all video data is captured
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Combine recorded video chunks into a single Blob
+      const videoBlob = new Blob(recordedChunks, { type: "video/webm" });
+
+      // Prepare FormData to upload the video to the backend
+      const formData = new FormData();
+      formData.append("file", videoBlob, "session_video.webm");
+
+      // 6a. Upload video via the /upload/ endpoint
+      const uploadResponse = await fetch("http://localhost:8000/upload/", {
+        method: "POST",
+        body: formData,
+      });
+      if (!uploadResponse.ok) {
+        throw new Error("Video upload failed.");
+      }
+      const uploadData = await uploadResponse.json();
+      const filename = uploadData.filename;
+      console.log("Uploaded video filename:", filename);
+
+      // 6b. Trigger video analysis via the /analyze/ endpoint
+      const analyzeFormData = new FormData();
+      analyzeFormData.append("filename", filename);
+      const analyzeResponse = await fetch("http://localhost:8000/analyze/", {
+        method: "POST",
+        body: analyzeFormData,
+      });
+      if (!analyzeResponse.ok) {
+        throw new Error("Video analysis failed.");
+      }
+      const analyzeData = await analyzeResponse.json();
+      const videoAnalysisText = analyzeData.analysis;
+      console.log("Video analysis result:", videoAnalysisText);
+
+      // 6c. Build a prompt that includes the conversation and video analysis results
+      // (The original prompt builder for diagnosis is used here.)
+      const prompt = buildPrompt(questions, true) + "\nVideo Analysis: " + videoAnalysisText;
+      const result = await model.generateContent(prompt);
+      const rawText = result.response.text();
+      console.log("Final diagnosis from Gemini:", rawText);
+
+      // Use parseDiagnosis to create a final diagnosis object
+      const finalDiagnosis = parseDiagnosis(rawText);
+      navigate("/diagnosis", { state: { finalDiagnosis } });
+    } catch (error) {
+      console.error("Error generating final diagnosis:", error);
+      navigate("/diagnosis", {
+        state: {
+          finalDiagnosis: {
+            summary: "Could not retrieve diagnosis at this time.",
+            classification: "N/A",
+            likelihood: "N/A",
+            treatmentPlan: "N/A",
+            followUp: "N/A",
+            videoAnalysis: "N/A",
+          },
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ======================
+  // 7. handleNextQuestion: Generate New Question or Final Diagnosis
+  // ======================
   const handleNextQuestion = async () => {
     if (voiceAnswer.trim()) {
       const updatedQuestions = [...questions];
@@ -218,27 +281,26 @@ const DynamicQuestionnaire = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      // Last question
-      if (questions.length >= QUESTION_THRESHOLD) {
-        await generateDiagnosis();
-      } else {
+      // At the end of the conversation, if the number of questions is below the threshold,
+      // generate a new question; otherwise, generate the final diagnosis.
+      if (questions.length < QUESTION_THRESHOLD) {
         await generateNewQuestion();
+      } else {
+        await generateDiagnosis();
       }
     }
   };
 
-  // ---------------------------------------------------------------
-  // 5. Generate New Question (LLM)
-  // ---------------------------------------------------------------
+  // ======================
+  // 8. generateNewQuestion & fallbackNewQuestion (unchanged)
+  // ======================
   const generateNewQuestion = async () => {
     try {
       setIsLoading(true);
       const prompt = buildPrompt(questions, false);
       const result = await model.generateContent(prompt);
-
       const rawText = result.response.text();
       console.log("LLM returned:", rawText);
-
       let parsed;
       try {
         const jsonMatch = rawText.match(/\{[\s\S]*\}/);
@@ -254,21 +316,18 @@ const DynamicQuestionnaire = () => {
           options: [],
         };
       }
-
       if (!parsed.question || !Array.isArray(parsed.options)) {
         parsed = {
           question: "Could not parse question format",
           options: [],
         };
       }
-
       const newQuestion = {
         id: questions.length + 1,
         text: parsed.question,
         answer: "",
         options: parsed.options.filter((opt) => typeof opt === "string"),
       };
-
       setQuestions((prev) => [...prev, newQuestion]);
       setCurrentQuestionIndex((prev) => prev + 1);
     } catch (error) {
@@ -279,41 +338,6 @@ const DynamicQuestionnaire = () => {
     }
   };
 
-  // ---------------------------------------------------------------
-  // 6. Generate Diagnosis (LLM)
-  // ---------------------------------------------------------------
-  const generateDiagnosis = async () => {
-    try {
-      setIsLoading(true);
-      const prompt = buildPrompt(questions, true);
-      const result = await model.generateContent(prompt);
-
-      const rawText = result.response.text();
-      console.log("Received final diagnosis from Gemini:", rawText);
-
-      const finalDiagnosis = parseDiagnosis(rawText);
-      navigate("/diagnosis", { state: { finalDiagnosis } });
-    } catch (error) {
-      console.error("Error generating diagnosis:", error);
-      navigate("/diagnosis", {
-        state: {
-          finalDiagnosis: {
-            summary: "Could not retrieve diagnosis at this time.",
-            classification: "N/A",
-            likelihood: "N/A",
-            treatmentPlan: "N/A",
-            followUp: "N/A",
-          },
-        },
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // ---------------------------------------------------------------
-  // 7. Fallback if LLM fails
-  // ---------------------------------------------------------------
   const fallbackNewQuestion = () => {
     const newQuestion = {
       id: questions.length + 1,
@@ -325,14 +349,13 @@ const DynamicQuestionnaire = () => {
     setCurrentQuestionIndex((prev) => prev + 1);
   };
 
-  // ---------------------------------------------------------------
-  // 8. Prompt Building & Parsing
-  // ---------------------------------------------------------------
+  // ======================
+  // 9. buildPrompt & parseDiagnosis (unchanged)
+  // ======================
   const buildPrompt = (qArray, isDiagnosis) => {
     const qaString = qArray
       .map((q, idx) => `Q${idx + 1}: ${q.text}\nA${idx + 1}: ${q.answer}`)
       .join("\n");
-
     if (!isDiagnosis) {
       return `
 You are a medical assistant. The following is a conversation with a patient.
@@ -355,13 +378,14 @@ Next medical question in JSON:
     } else {
       return `
 You are a highly experienced medical professional with the ability to diagnose common conditions
-based on a set of Q&A. Please analyze the conversation below and provide a concise final diagnosis
+based on a set of Q&A. Please analyze the conversation and video below and provide a concise final diagnosis
 in a STRICTLY in the below structured format, including all these components is REQUIRED (STRICT INSTRUCTIONS):
 - Summary: (e.g., "Patient likely has X")
 - Classification: (e.g., "Diagnosis X")
 - Likelihood: (e.g., "High probability of X")
 - Treatment: (e.g., "Prescribe medication Y")
 - Follow-up: (e.g., "Schedule a follow-up in 2 weeks")
+- Video-Analysis: (Include any relevant details from the video analysis)
 
 Return your response in STRICTLY plain text ONLY.
 
@@ -381,8 +405,8 @@ Now provide the final diagnosis:
       likelihood: "",
       treatmentPlan: "",
       followUp: "",
+      videoAnalysis: "",
     };
-
     lines.forEach((line) => {
       if (line.toLowerCase().startsWith("summary:")) {
         diagnosis.summary = line.replace(/summary:/i, "").trim();
@@ -394,16 +418,17 @@ Now provide the final diagnosis:
         diagnosis.treatmentPlan = line.replace(/treatment:/i, "").trim();
       } else if (line.toLowerCase().startsWith("follow-up:")) {
         diagnosis.followUp = line.replace(/follow-up:/i, "").trim();
+      } else if (line.toLowerCase().startsWith("video-analysis:")) {
+        diagnosis.videoAnalysis = line.replace(/video-analysis:/i, "").trim();
       }
     });
-
     if (!diagnosis.summary) diagnosis.summary = diagnosisText;
     return diagnosis;
   };
 
-  // ---------------------------------------------------------------
-  // Rendering Logic
-  // ---------------------------------------------------------------
+  // ======================
+  // 10. Render the Component
+  // ======================
   const currentQuestion = questions[currentQuestionIndex];
   const isScale = isScaleQuestion();
   const isMCQ = hasMultipleChoiceOptions();
@@ -424,16 +449,13 @@ Now provide the final diagnosis:
               <span role="img" aria-label="question">❓</span> {currentQuestion.text}
             </label>
 
-            {/** 1) If LLM provided multiple-choice options, show them */}
             {isMCQ && !isScale && (
               <div className="options-container">
                 {currentQuestion.options.map((opt) => (
                   <button
                     key={opt}
                     type="button"
-                    className={`option-button ${
-                      currentQuestion.answer === opt ? "selected" : ""
-                    }`}
+                    className={`option-button ${currentQuestion.answer === opt ? "selected" : ""}`}
                     onClick={() => handleOptionClick(opt)}
                     disabled={isLoading || isRecording}
                   >
@@ -451,7 +473,6 @@ Now provide the final diagnosis:
               </div>
             )}
 
-            {/** 2) If question is "On a scale of 1 to 10" */}
             {isScale && (
               <div className="scale-container">
                 <input
@@ -463,16 +484,11 @@ Now provide the final diagnosis:
                   className="scale-slider"
                   disabled={isLoading || isRecording}
                 />
-                <div className="scale-value">
-                  Selected: {currentQuestion.answer || 5}
-                </div>
-                <p className="nccn-thermometer-text">
-                  This is a NCCN distress thermometer.
-                </p>
+                <div className="scale-value">Selected: {currentQuestion.answer || 5}</div>
+                <p className="nccn-thermometer-text">This is a NCCN distress thermometer.</p>
               </div>
             )}
 
-            {/** 3) Fallback: text input if no MCQ and not scale */}
             {!isMCQ && !isScale && (
               <input
                 type="text"
@@ -485,7 +501,6 @@ Now provide the final diagnosis:
           </div>
 
           <div className="speech-buttons">
-            {/* TTS */}
             <button
               type="button"
               onClick={handleSpeakQuestion}
@@ -494,8 +509,6 @@ Now provide the final diagnosis:
             >
               {isLoading ? "..." : "🔊 Read Question"}
             </button>
-
-            {/* STT */}
             {!isRecording ? (
               <button
                 type="button"
@@ -549,7 +562,6 @@ Now provide the final diagnosis:
         </div>
       </div>
 
-      {/** Video Preview Box */}
       <div className="video-preview">
         <video ref={videoRef} autoPlay muted className="video-element" />
       </div>
