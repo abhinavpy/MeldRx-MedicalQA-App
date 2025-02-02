@@ -1,0 +1,127 @@
+/* Global Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f5f6fa;
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* Layout & Navigation */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #2d3e50;
+  color: #fff;
+  padding: 1rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin: 1rem 0;
+}
+
+.sidebar a {
+  color: #fff;
+  transition: color 0.2s;
+}
+
+.sidebar a:hover {
+  color: #1abc9c;
+}
+
+.content {
+  flex: 1;
+  padding: 2rem;
+}
+
+/* Data Input Component */
+.data-input-component {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+}
+
+.data-input-component h2 {
+  margin-bottom: 1rem;
+  color: #2d3e50;
+}
+
+.data-input-component form > div {
+  margin-bottom: 1rem;
+}
+
+.data-input-component label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.data-input-component input,
+.data-input-component textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.data-input-component textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.data-input-component .error {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+}
+
+/* Button Styling */
+button {
+  background-color: #1abc9c;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #16a085;
+}
+
+/* Decision Engine Integration & Output Components */
+.decision-engine-integration,
+.decision-output-component {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #fff;
+  border: 1px solid #1abc9c;
+  border-radius: 6px;
+}
+
+.decision-engine-integration h3,
+.decision-output-component h3 {
+  margin-top: 0;
+  color: #2d3e50;
+}
+
+.decision-output-component .result-card p {
+  margin: 0.5rem 0;
+  line-height: 1.4;
+}

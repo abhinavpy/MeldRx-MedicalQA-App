@@ -1,0 +1,90 @@
+/* FormPage.css (same as the snippet you provided) */
+.popup-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  
+  .popup-form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 500px;
+  }
+  
+  .form-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    width: 48%;
+  }
+  
+  label {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #808080;
+  }
+  
+  .input-field {
+    padding: 10px;
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    font-size: 14px;
+    color: #000000;
+  }
+  
+  .input-field:focus {
+    outline: none;
+    border-color: #00b3a6;
+    background-color: #ffffff;
+  }
+  
+  .read-only {
+    background-color: #f2f2f2;
+    color: #333333;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .save-button {
+    background-color: #00d9cf;
+    color: #000000;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .save-button:hover {
+    background-color: #00b3a6;
+  }
+  
+  .cancel-button {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 10px 20px;
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .cancel-button:hover {
+    background-color: #f2f2f2;
+  }
+  

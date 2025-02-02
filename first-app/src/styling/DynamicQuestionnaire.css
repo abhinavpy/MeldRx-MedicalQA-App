@@ -1,0 +1,252 @@
+/* Container that holds the entire questionnaire page */
+.questionnaire-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f2f7f9;
+  padding: 20px;
+}
+
+/* The main card that holds the questionnaire and answers */
+.questionnaire-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Subtle fade-in animation for the card */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Title and subtitle */
+.questionnaire-title {
+  font-size: 1.8rem;
+  color: #008080; /* teal color for accent */
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.questionnaire-subtitle {
+  font-size: 0.95rem;
+  color: #555555;
+  margin-bottom: 1.5rem;
+}
+
+/* Form section styles */
+.questionnaire-form {
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.question-label {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Text field styling */
+.input-field {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #333;
+  background: #fff;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.input-field:focus {
+  border-color: #008080;
+}
+
+/* Button styling */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cta-button {
+  background-color: #008080;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s;
+}
+
+.cta-button:hover {
+  background-color: #006666;
+}
+
+.cta-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Answers Section */
+.answers-section {
+  margin-top: 1.5rem;
+}
+
+.answers-title {
+  font-size: 1.2rem;
+  color: #333333;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Scrolling area for the answers list if it grows large */
+.answers-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fafafa;
+}
+
+/* Each list item */
+.answers-list-item {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.answers-list-item strong {
+  color: #008080;
+}
+
+/* Container for TTS and STT buttons */
+.speech-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+/* TTS Button */
+.tts-button {
+  background-color: #fafafa;
+  color: #333333;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.tts-button:hover {
+  background-color: #f2f2f2;
+}
+
+/* STT Button (Start & Stop) */
+.stt-button {
+  background-color: #fafafa;
+  color: #333333;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.stt-button.start {
+  border-color: #008080;
+  color: #008080;
+}
+
+.stt-button.stop {
+  border-color: #cc0000;
+  color: #cc0000;
+}
+
+.stt-button:hover {
+  background-color: #f2f2f2;
+}
+
+/* Container for multiple-choice options */
+.options-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0.75rem;
+}
+
+/* Individual option button */
+.option-button {
+  background-color: #d6d8d6;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.option-button:hover {
+  background-color: #208358;
+  color: #ffffff;
+}
+
+/* Highlight the selected option */
+.option-button.selected {
+  background-color: #008080;
+  color: #ffffff;
+  border: 1px solid #006666;
+}
+
+/* Adjust the main container to display the questionnaire and video side by side */
+.questionnaire-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  background: #f2f7f9;
+  padding: 20px;
+}
+
+/* Video preview box styling */
+.video-preview {
+  width: 300px;
+  height: 200px;
+  margin-left: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure the video fills the preview box */
+.video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
