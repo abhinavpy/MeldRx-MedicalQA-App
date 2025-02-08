@@ -1,0 +1,124 @@
+/* Container styling */
+.api-response-wrapper {
+    width: 100%;
+    max-width: 600px;
+    margin: 2rem auto 0;
+  }
+  
+  /* Main content card */
+  .diagnosis-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    animation: fadeIn 0.5s ease-in-out;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  /* Content area styling */
+  .api-response-content {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #333333;
+    padding: 15px 0;
+  }
+  
+  /* Markdown content styles */
+  .api-response-content h1,
+  .api-response-content h2,
+  .api-response-content h3,
+  .api-response-content h4,
+  .api-response-content h5,
+  .api-response-content h6 {
+    color: #008080;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .api-response-content p {
+    margin-bottom: 1rem;
+  }
+  
+  /* Citation marker styling */
+  .citation {
+    color: #008080;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: underline dotted;
+    transition: background-color 0.2s ease;
+  }
+  
+  .citation:hover {
+    background-color: #e6f7f7;
+    text-decoration: underline solid;
+  }
+  
+  /* Improved citation tooltip styling */
+  .citation-tooltip {
+    background: #ffffff;
+    border: 1px solid #008080;
+    border-radius: 8px;
+    padding: 10px 15px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+    font-size: 0.9rem;
+    max-width: 300px;
+    color: #333;
+    animation: fadeInTooltip 0.2s ease-out;
+    z-index: 1000;
+  }
+  
+  /* Optional header inside the tooltip */
+  .citation-tooltip-header {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #008080;
+  }
+  
+  /* Citation link styling inside the tooltip */
+  .citation-link {
+    color: #006666 !important;
+    text-decoration: none;
+    word-break: break-all;
+    font-family: monospace;
+    font-size: 0.85em;
+  }
+  
+  .citation-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Tooltip fade-in animation */
+  @keyframes fadeInTooltip {
+    from {
+      opacity: 0;
+      transform: translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Fade-in animation for the card */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .diagnosis-card {
+      padding: 20px;
+    }
+  
+    .api-response-content {
+      font-size: 0.9rem;
+    }
+  }
+  

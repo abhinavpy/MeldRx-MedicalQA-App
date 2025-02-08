@@ -1,13 +1,59 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import "../styling/DiagnosisPage.css";
+import APIResponseDisplay from "./APIResponseDisplay";
 
 const DiagnosisPage = () => {
   // Retrieve the final diagnosis data (the analysis result) passed via navigate
   const location = useLocation();
-  const { finalDiagnosis } = location.state || {};
+  const { finalDiagnosis, qaString, diagnosisString } = location.state || {};
 
-  if (!finalDiagnosis) {
+  // State to hold the Perplexity API response and any error encountered
+  const [apiResponse, setApiResponse] = useState(null);
+  const [error, setError] = useState(null);
+  const isDataReady = finalDiagnosis && qaString && diagnosisString;
+  console.log("This is finalDiagnosis: ", finalDiagnosis);
+  if(qaString) console.log("This  is qaString: ", qaString); else console.log("qaString is null");
+  if(diagnosisString) console.log("This is diagnosisString: ", diagnosisString); else console.log("diagnosisString is null");
+
+
+  // Use useEffect to trigger the API call when finalDiagnosis is available.
+  useEffect(() => {
+    if (isDataReady) {
+      // Prepare the payload.
+      // In this example, we use a conversation string from finalDiagnosis if available,
+      // or a fallback dummy conversation.
+      const payload = {
+        qaString: qaString,
+        diagnosisString: diagnosisString || "No diagnosis provided."
+      };
+
+      // Make the POST request to the backend endpoint for Perplexity API
+      fetch("http://localhost:8000/perplexity/diagnosis", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Failed to fetch Perplexity API response");
+          }
+          console.log("Response from the API: " + res);
+          setApiResponse(res);
+          return res.json();
+        })
+        .then((data) => {
+          setApiResponse(data);
+        })
+        .catch((err) => {
+          setError(err.message);
+        });
+    }
+  }, [isDataReady, finalDiagnosis && qaString && diagnosisString]);
+
+  if (!finalDiagnosis || !qaString || !diagnosisString) {
     return (
       <div className="diagnosis-container">
         <div className="diagnosis-card">
@@ -92,6 +138,12 @@ const DiagnosisPage = () => {
           </p>
         </div>
       </div>
+
+      {/* Display any error encountered */}
+      {error && <div className="error-message">{error}</div>}
+      
+      {/* APIResponseDisplay component receives the response from the Perplexity API */}
+      <APIResponseDisplay response={apiResponse} />
     </div>
   );
 };

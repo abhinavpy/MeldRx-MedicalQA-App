@@ -9,6 +9,7 @@ import DecisionEngineIntegration from "./components/DecisionEngineIntegration";
 import DecisionOutputComponent from "./components/DecisionOutputComponent";
 import DynamicQuestionnaire from "./components/DynamicQuestionnaire";
 import DiagnosisPage from "./components/DiagnosisPage";
+import APIResponseDisplay from "./components/APIResponseDisplay";
 
 function App() {
   // Example patientData and decisionResult for demonstration
@@ -36,6 +37,7 @@ function App() {
         <Route path="/form" element={<FormPage />} />
         <Route path="/dynamic-questionnaire" element={<DynamicQuestionnaire />} />
         <Route path="/diagnosis" element={<DiagnosisPage />} />
+        <Route path="/api-response-display" element={<APIResponseDisplay />} />
 
         {/* Other routes */}
         <Route path="/patient-data" element={<DataInputComponent />} />

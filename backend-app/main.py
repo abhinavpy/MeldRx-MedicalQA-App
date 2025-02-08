@@ -5,7 +5,9 @@ import asyncio
 from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
 
@@ -35,6 +37,61 @@ app.add_middleware(
 UPLOAD_DIR = "uploads"
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
+
+
+# Pydantic model for the request payload from the frontend.
+class PerplexityRequest(BaseModel):
+    qaString: str
+    diagnosisString: str
+
+# External Perplexity API endpoint and API key (ensure you have set this in your .env file)
+PERPLEXITY_API_URL = "https://api.perplexity.ai/chat/completions"
+PERPLEXITY_API_KEY = os.environ.get("PERPLEXITY_API_KEY")
+print(PERPLEXITY_API_KEY)
+if not PERPLEXITY_API_KEY:
+    raise Exception("PERPLEXITY_API_KEY environment variable not set.")
+
+@app.post("/perplexity/diagnosis")
+def perplexity_diagnosis(request: PerplexityRequest):
+    """
+    This endpoint receives qaString and diagnosisString from the frontend,
+    constructs the message content, makes a POST request to the Perplexity API,
+    and returns the JSON response.
+    """
+    # Construct the message content using the provided strings.
+    message_content = (
+        f"I have provided a diagnosis based on a conversation. "
+        f"The conversation is as follows: {request.qaString}. "
+        f"The diagnosis I provided is as follows: {request.diagnosisString}. "
+        "I want you to back my diagnosis with reasoning and citations."
+    )
+
+    # Build the payload in the required format.
+    payload = {
+        "messages": [
+            {
+                "content": message_content,
+                "role": "user"
+            }
+        ],
+        "model": "sonar"
+    }
+
+    headers = {
+        "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    try:
+        # Make the POST request to the Perplexity API.
+        response = requests.post(PERPLEXITY_API_URL, json=payload, headers=headers)
+        response.raise_for_status()  # Raise an HTTPError if the response was unsuccessful.
+    except requests.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Error calling Perplexity API: {str(e)}")
+
+    # Return the JSON response received from the Perplexity API.
+    return response.json()
+
 
 # ----------------------------
 # Endpoint: Upload Video File

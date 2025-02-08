@@ -1,8 +1,9 @@
 /* Centers the content vertically and horizontally, with a light background */
 .diagnosis-container {
   display: flex;
+  flex-direction: row;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
   background: #f2f7f9;
   padding: 20px;
@@ -97,4 +98,35 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+/* Citations Section Styling */
+.citations-section {
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #f7f9fb;
+  border-left: 4px solid #007070;
+  border-radius: 8px;
+}
+
+.citations-section h3 {
+  margin-top: 0;
+  color: #007070;
+}
+
+.citations-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.citations-section li {
+  margin-bottom: 5px;
+}
+
+.citations-section a {
+  color: #006666;
+  text-decoration: none;
+}
+
+.citations-section a:hover {
+  text-decoration: underline;
 }

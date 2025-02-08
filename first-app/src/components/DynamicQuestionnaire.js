@@ -244,11 +244,14 @@ const DynamicQuestionnaire = () => {
       const prompt = buildPrompt(questions, true) + "\nVideo Analysis: " + videoAnalysisText;
       const result = await model.generateContent(prompt);
       const rawText = result.response.text();
+      const qaString = questions
+  .map((q, idx) => `Q${idx + 1}: ${q.text}\nA${idx + 1}: ${q.answer}`)
+  .join("\n");
       console.log("Final diagnosis from Gemini:", rawText);
-
+      const diagnosisString = rawText;
       // Use parseDiagnosis to create a final diagnosis object
       const finalDiagnosis = parseDiagnosis(rawText);
-      navigate("/diagnosis", { state: { finalDiagnosis } });
+      navigate("/diagnosis", { state: { finalDiagnosis, diagnosisString, qaString } });
     } catch (error) {
       console.error("Error generating final diagnosis:", error);
       navigate("/diagnosis", {
@@ -365,10 +368,10 @@ Do not ask if patient has enough funds/finances/health insurance or any other ir
 STRICT INSTRUCTIONS:
 1. Respond ONLY with valid JSON containing:
    - "question": string (required)
-   - "options": array of strings (required)
+   - "options": array of strings appended with a relevant emoji (string required, emoji not compulsory)
 2. Remove any markdown formatting
 3. Example response:
-{"question": "Where is the pain located?", "options": ["Chest", "Abdomen", "Back"]}
+{"question": "Where is the pain located?", "options": ["Chest 🧍", "Arm 💪🏼", "Leg 🦵🏻"]}
 
 Patient conversation:
 ${qaString}
@@ -376,6 +379,7 @@ ${qaString}
 Next medical question in JSON:
       `;
     } else {
+      console.log("The conversation so far is: " + qaString);
       return `
 You are a highly experienced medical professional with the ability to diagnose common conditions
 based on a set of Q&A. Please analyze the conversation and video below and provide a concise final diagnosis
@@ -538,7 +542,7 @@ Now provide the final diagnosis:
               disabled={isLoading || isRecording}
             >
               {isLoading
-                ? "Generating..."
+                ? "Please wait a few seconds. Generating..."
                 : currentQuestionIndex < questions.length - 1
                 ? "Next"
                 : questions.length < QUESTION_THRESHOLD
